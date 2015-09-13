@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Urg_Driver.h"
-
+#include "ofMain.h"
 #define OFX_URG_BEGIN_NAMESPACE namespace ofx { namespace Urg {
 #define OFX_URG_END_NAMESPACE } }
 
@@ -43,6 +43,11 @@ public:
     }
     
     void setMode(const Mode& mode) { this->mode = mode; }
+    
+    void setRange(int lower, int upper){
+        this->upper = upper;
+        this->lower = lower;
+    }
     
     void setupSerial(const string& device_name = "", int baudrate = 115200)
     {
@@ -138,6 +143,61 @@ public:
         mutex.unlock();
     }
     
+    vector<ofVec2f> getNormalizedPoints() const {
+        vector<ofVec2f> points;
+        points.resize(data.size());
+        ofMutex mutex;
+        mutex.lock();
+        for(int i = 0; i < points.size(); i++) {
+            float r = data[i];
+            float theta = urg.index2rad(i);
+            float x = ofMap(r * cos(theta), lower, upper, 0, 1000, true);
+            float y = ofMap(r * sin(theta), lower, upper, 0, 1000, true);
+            points[i] = ofVec2f(x,y);
+        }
+        mutex.unlock();
+        return points;
+    }
+    
+    vector<ofVec2f> getPoints() const {
+        vector<ofVec2f> points;
+        points.resize(data.size());
+        ofMutex mutex;
+        mutex.lock();
+        for(int i = 0; i < points.size(); i++) {
+            float r = data[i];
+            float theta = urg.index2rad(i);
+            float x = r * cos(theta);
+            float y = r * sin(theta);
+            points[i] = ofVec2f(x,y);
+        }
+        mutex.unlock();
+        return points;
+    }
+    
+    void draw(int gridDivisions, float gridSize) const {
+        ofPushMatrix();
+        ofPushStyle();
+        ofSetCircleResolution(20);
+        ofPushMatrix();
+        ofNoFill();
+        for(int i = 0; i < gridDivisions; i++) {
+            float radius = ofMap(i, -1, gridDivisions - 1, 0, gridSize);
+            ofSetColor(64);
+            ofCircle(0, 0, radius);
+            ofVec2f textPosition = ofVec2f(radius, 0).rotate(45);
+            ofSetColor(255);
+            ofDrawBitmapString(ofToString(radius, 2) + "mm", textPosition);
+        }
+        ofPopMatrix();
+        
+        ofSetColor(255);
+        getPointCloud().draw();
+        ofPopStyle();
+        ofPopMatrix();
+    }
+
+    
     void drawDebug(float width = ofGetWindowWidth(), float height = ofGetWindowHeight()) const
     {
         ofMutex mutex;
@@ -150,16 +210,24 @@ public:
         }
         mutex.unlock();
     }
-    void drawDebugPolar() const
+    void drawPointCloud() const
     {
+        ofPushMatrix();
+        ofPushStyle();
+        ofMesh m = getPointCloud();
+        m.draw();
+        ofPopStyle();
+        ofPopMatrix();
+    }
+    
+    ofMesh getPointCloud() const{
         ofMesh m;
-        m.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
-        m.addVertex(ofVec3f::zero());
-        
+        m.setMode(OF_PRIMITIVE_POINTS);
         ofMutex mutex;
         mutex.lock();
         for (int i=0; i<data.size(); i++)
         {
+            
             float r = data[i];
             float theta = urg.index2rad(i);
             float x = r * cos(theta);
@@ -167,8 +235,43 @@ public:
             m.addVertex(ofVec3f(x,y));
         }
         mutex.unlock();
-        
+        return m;
+    }
+    
+    ofMesh getDebugPointCloud() const{
+        ofMesh m;
+        m.setMode(OF_PRIMITIVE_POINTS);
+        ofMutex mutex;
+        mutex.lock();
+        for (int i=0; i<data.size(); i++)
+        {
+            
+            float r = data[i];
+            float theta = urg.index2rad(i);
+            float x = r * cos(theta);
+            float y = r * sin(theta);
+            m.addVertex(ofVec3f(x,y));
+            if(i %2 == 0){
+                m.addColor(ofColor(255, 0, 255));
+            }else{
+                m.addColor(ofColor(255, 255, 0));
+            }
+        }
+        mutex.unlock();
+        return m;
+    }
+
+    
+    
+    void drawDebugPolar() const
+    {
+        ofPushMatrix();
+        ofPushStyle();
+        ofMesh m = getDebugPointCloud();
+
         m.draw();
+        ofPopStyle();
+        ofPopMatrix();
     }
     bool isFrameNew() const { return is_frame_new; }
     
@@ -200,6 +303,15 @@ public:
     long getData(int index) const { return data.at(index); }
     const vector<unsigned short>& getIntensity() const { return intensity; }
     unsigned short getIntensity(int index) const { return intensity.at(index); }
+    
+    vector<ofVec2f> firstPoints;
+    vector<ofVec2f> secondPoints;
+    int upper;
+    int lower;
+    ofFbo mTexture;
+    ofTexture & getTexture(){
+        return mTexture.getTextureReference();
+    }
     
 protected:
     
