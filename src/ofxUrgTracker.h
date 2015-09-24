@@ -36,7 +36,8 @@ public:
     ,minClusterSize(1)
     ,maxPointDistance(50)
     ,useKmeans(true)
-    ,maxStddev(60) { // 60 is good for hand/arm tracking
+    ,maxStddev(60)
+    ,captureOutline(true){ // 60 is good for hand/arm tracking
     }
     void setupKmeans(float maxStddev, unsigned int maxClusterCount) {
         this->maxClusterCount = maxClusterCount;
@@ -60,9 +61,59 @@ public:
         }
         ofSetColor(255);
         ofRect(region);
+        outline.draw();
+        ofSetColor(255, 0, 255);
+        left.draw();
+        ofSetColor(255, 255, 0);
+        right.draw();
         ofPopStyle();
     }
-    void update(const vector<ofVec2f>& points) {
+    void update(const vector<ofPoint>& points) {
+        if(captureOutline){
+            outline.clear();
+            left.clear();
+            right.clear();
+            for(int i = 1; i < points.size(); i++){
+                
+                
+                const ofPoint & thisPoint = points[i - 1];
+                
+                outline.addVertex(thisPoint);
+                
+            }
+            outline.close();
+            outline = outline.getSmoothed(8);
+            int numVerts = outline.getVertices().size();
+            for(int i = 1; i < numVerts; i++){
+                const ofPoint & thisPoint = outline.getVertices()[i - 1];
+                const ofPoint & nextPoint = outline.getVertices()[i];
+                ofPoint delta		= nextPoint - thisPoint;
+                ofPoint deltaNorm	= delta.normalized();
+                
+                ofVec3f toTheLeft	= deltaNorm.getPerpendicular(ofVec3f(0, 0, 1));
+                
+                ofPoint L = thisPoint + toTheLeft * 100;
+                ofPoint R = thisPoint - toTheLeft * 100;
+                left.addVertex(L);
+                right.addVertex(R);
+            }
+            
+
+            right.close();
+            left.close();
+      
+
+            
+            //            ofPoint center = outline.getCentroid2D();
+            //            for(int i = 0; i < outline.getVertices().size(); i++){
+            //                ofPoint pt = outline.getVertices()[i];
+            //                outline.getVertices()[i] = pt*0.9;
+            //            }
+            //            outline = outline.getSmoothed(8);
+            //            right = right.getSmoothed(8);
+            //            left = left.getSmoothed(8);
+            captureOutline = false;
+        }
         if(useKmeans) {
             updateKmeans(points);
         } else {
@@ -82,7 +133,15 @@ public:
     const vector<cv::Point2f>& getClusters() const {
         return clusters;
     }
+    void saveOutline(){
+        outline.clear();
+        captureOutline = true;
+    }
 protected:
+    bool captureOutline;
+    ofPolyline outline;
+    ofPolyline left;
+    ofPolyline right;
     vector<cv::Point2f> clusters;
     ofRectangle region;
     unsigned int maxClusterCount;
@@ -90,7 +149,7 @@ protected:
     bool useKmeans;
     int minClusterSize, maxPointDistance;
     
-    void updateNaive(const vector<ofVec2f>& points) {
+    void updateNaive(const vector<ofPoint>& points) {
         if(points.size() > 0) {
             vector< vector<ofVec2f> > all;
             for(int i = 0; i < points.size(); i++) {
@@ -129,12 +188,13 @@ protected:
         }
     }
     
-    void updateKmeans(const vector<ofVec2f>& points) {
+    void updateKmeans(const vector<ofPoint>& points) {
         // build samples vector for all points within the bounds
         vector<cv::Point2f> samples;
+        ofPoint center = outline.getCentroid2D();
         for(int i = 0; i < points.size(); i++) {
-            if(region.inside(points[i])) {
-                samples.push_back(ofxCv::toCv(points[i]));
+            if(right.inside(ofVec2f(points[i].x, points[i].y))) {
+                samples.push_back(ofxCv::toCv(ofVec2f(points[i].x, points[i].y)));
             }
         }
         

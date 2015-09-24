@@ -26,6 +26,12 @@ class ofApp : public ofBaseApp {
     vector<long> urgData;
     ofMesh mesh;
     ofImage img;
+    
+    ofParameter<int> maxStddev;
+    ofParameter<int> maxClusterCount;
+    int preCount;
+    int preSdev;
+    
 public:
     void setup()
     {
@@ -36,6 +42,9 @@ public:
         urgParameters.setName("LiDAR Parameter");
         urgParameters.add(urgPort.set("Serial Port", "/dev/tty.usbmodem14541"));
         urgParameters.add(maxRange.set("Max Range", "5600"));
+        urgParameters.add(maxClusterCount.set("maxClusterCount", 100, 1, 400));
+        urgParameters.add(maxStddev.set("maxStddev", 100, 1, 400));
+        
         
         oscParameters.setName("OSC Paremeters");
         oscParameters.add(oscHost.set("OSC HOST", "127.0.0.1"));
@@ -68,10 +77,10 @@ public:
         sender.setup(oscHost.get(), ofToInt(oscPort.get()));
         
         mesh = ofMesh();
-     
+        
         trackingRegion.set(-_max/2, -_max/2, _max, _max);
         
-        tracker.setupKmeans(100, 18);
+        tracker.setupKmeans(maxStddev, maxClusterCount);
         tracker.setMaximumDistance(400);
         tracker.setPersistence(10);
         tracker.setRegion(trackingRegion);
@@ -86,24 +95,29 @@ public:
     {
         urg.update();
         if(urg.isFrameNew()){
+            
             tracker.update(urg);
             urgData = urg.getData();
             if(urgData.size() > 0){
                 ofxOscMessage m;
                 m.setAddress("/urg/data");
                 ofBuffer buffer;
-                
                 buffer.append((char*) &urgData[0], urgData.size());
-                //        }
                 m.addBlobArg(buffer);
                 sender.sendMessage(m);
-                
             }
         }
         
-        
-        
-        
+        if(maxStddev != preSdev || maxClusterCount != preCount){
+            tracker.setupKmeans(maxStddev, maxClusterCount);
+            preCount = maxClusterCount;
+            preSdev = maxStddev;
+        }
+    }
+    void keyPressed(int key){
+        if(key == ' '){
+            tracker.saveOutline();
+        }
     }
     
     void draw()
@@ -124,7 +138,7 @@ public:
         
         ofDrawBitmapString(ofToString(ofGetFrameRate(), 0), 20, 20);
         
-//        server.publishScreen();
+        //        server.publishScreen();
         panel.draw();
     }
 };

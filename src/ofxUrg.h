@@ -159,17 +159,21 @@ public:
         return points;
     }
     
-    vector<ofVec2f> getPoints() const {
-        vector<ofVec2f> points;
+    vector<ofPoint> getPoints() const {
+        vector<ofPoint> points;
         points.resize(data.size());
         ofMutex mutex;
         mutex.lock();
         for(int i = 0; i < points.size(); i++) {
             float r = data[i];
+            if(r == 0 || r < minDistance()){
+//                cout<<r<<endl;
+                r = 5600;
+            }
             float theta = urg.index2rad(i);
             float x = r * cos(theta);
             float y = r * sin(theta);
-            points[i] = ofVec2f(x,y);
+            points[i] = ofPoint(x,y);
         }
         mutex.unlock();
         return points;
@@ -178,7 +182,7 @@ public:
     void draw(int gridDivisions, float gridSize) const {
         ofPushMatrix();
         ofPushStyle();
-        ofSetCircleResolution(20);
+        ofSetCircleResolution(60);
         ofPushMatrix();
         ofNoFill();
         for(int i = 0; i < gridDivisions; i++) {
