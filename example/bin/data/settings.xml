@@ -15,5 +15,5 @@
 <Search_Region>0, 0, 0, 500, 500</Search_Region>
 <Search_Region_Center>-1500, -1500</Search_Region_Center>
 	<Use_Auto_Region>0</Use_Auto_Region>
-	<Search_Region_Size>2710.2</Search_Region_Size>
+	<Search_Region_Size>1500</Search_Region_Size>
 </group>
