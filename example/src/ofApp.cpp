@@ -5,6 +5,8 @@
 #include "ofxXmlSettings.h"
 #include "ofxGui.h"
 #include "ofxUrgTracker.h"
+#include "ofxTiming.h"
+#include "ofxCv.h"
 class ofApp : public ofBaseApp {
     
     
@@ -22,11 +24,20 @@ class ofApp : public ofBaseApp {
     ofParameter<string> maxRange;
     ofParameter<string> urgPort;
     ofParameterGroup urgParameters;
+    
+    ofParameter<float> zoom;
+    ofParameter<ofVec2f> searchRegionCenterPt;
+    ofParameter<float> searchRegionSize;
+    ofRectangle searchRegion;
+    ofParameter<bool> useAutoRegion;
+    ofParameterGroup viewParameters;
+    
     ofxPanel panel;
     vector<long> urgData;
     ofMesh mesh;
     ofImage img;
     
+    map<unsigned int, Hysteresis*> timers;
     ofParameter<int> maxStddev;
     ofParameter<int> maxClusterCount;
     int preCount;
@@ -40,24 +51,36 @@ public:
         ofBackground(0);
         
         urgParameters.setName("LiDAR Parameter");
-        urgParameters.add(urgPort.set("Serial Port", "/dev/tty.usbmodem14541"));
+        urgParameters.add(urgPort.set("Serial Port", "/dev/tty.usbmodem14121"));
         urgParameters.add(maxRange.set("Max Range", "5600"));
-        urgParameters.add(maxClusterCount.set("maxClusterCount", 100, 1, 400));
-        urgParameters.add(maxStddev.set("maxStddev", 100, 1, 400));
+        urgParameters.add(maxClusterCount.set("maxClusterCount", 12, 1, 400));
+        urgParameters.add(maxStddev.set("maxStddev", 60, 1, 400));
         
         
         oscParameters.setName("OSC Paremeters");
         oscParameters.add(oscHost.set("OSC HOST", "127.0.0.1"));
         oscParameters.add(oscPort.set("OSC PORT", "7777"));
         
+        viewParameters.add(searchRegionCenterPt.set("Search Region Center", ofVec2f(-ofToInt(maxRange)/2, -ofToInt(maxRange)/2), ofVec2f(-ofToInt(maxRange), -ofToInt(maxRange)), ofVec2f(ofToInt(maxRange), ofToInt(maxRange))));
+        viewParameters.add(useAutoRegion.set("Use Auto Region", false));
+        viewParameters.add(searchRegionSize.set("Search Region Size", 500, 0, ofToInt(maxRange)*2));
+        viewParameters.add(zoom.set("Zoom", 0.05, 0.05, .2));
+        
+        searchRegionCenterPt.addListener(this, &ofApp::updatedSearchCenterPoint);
+        searchRegionSize.addListener(this, &ofApp::updatedSearchSize);
+        useAutoRegion.addListener(this, &ofApp::updateAutoRegion);
+        searchRegion.set(searchRegionCenterPt.get(), searchRegionSize, searchRegionSize);
+        
+        
         panel.setup();
         panel.add(urgParameters);
         panel.add(oscParameters);
+        panel.add(viewParameters);
         panel.setSize(350, 350);
         panel.setWidthElements(350);
         //
         //        panel.saveToFile("settings.xml");
-        panel.loadFromFile("settings.xml");
+        //panel.loadFromFile("settings.xml");
         
         
         int _max = ofToInt(maxRange);
@@ -84,8 +107,23 @@ public:
         tracker.setMaximumDistance(400);
         tracker.setPersistence(10);
         tracker.setRegion(trackingRegion);
+        tracker.setRegion(searchRegion);
         
     }
+    void updatedSearchCenterPoint(ofVec2f & center){
+        searchRegion.set(searchRegionCenterPt.get(), searchRegionSize, searchRegionSize);
+        tracker.setRegion(searchRegion);
+    }
+    void updatedSearchSize(float & size){
+        searchRegion.set(searchRegionCenterPt.get(), size, size);
+        tracker.setRegion(searchRegion);
+    }
+    void updateAutoRegion(bool & input){
+        
+        tracker.setUseAutoRegion(input);
+        
+    }
+    
     
     void exit(){
         panel.saveToFile("settings.xml");
@@ -100,10 +138,24 @@ public:
             urgData = urg.getData();
             if(urgData.size() > 0){
                 ofxOscMessage m;
-                m.setAddress("/urg/data");
-                ofBuffer buffer;
-                buffer.append((char*) &urgData[0], urgData.size());
-                m.addBlobArg(buffer);
+                m.setAddress("/urg/raw/data");
+                for(int i = 0; i < urgData.size(); i++){
+                    m.addIntArg(urgData[i]);
+                    m.addFloatArg(urg.index2rad(i));
+                }
+                sender.sendMessage(m);
+            }
+            
+            vector<ofxUrgFollower> folowers = tracker.getFollowers();
+            if(folowers.size() > 0){
+                ofxOscMessage m;
+                m.setAddress("/urg/tracker/data");
+                for(int i = 0; i < folowers.size(); i++){
+                    ofVec2f pt = ofxCv::toOf(folowers[i].getPosition());
+                    m.addIntArg(i);
+                    m.addFloatArg(pt.x);
+                    m.addFloatArg(pt.y);
+                }
                 sender.sendMessage(m);
             }
         }
@@ -113,24 +165,19 @@ public:
             preCount = maxClusterCount;
             preSdev = maxStddev;
         }
+        
     }
     void keyPressed(int key){
-        if(key == ' '){
-            tracker.saveOutline();
-        }
+        
     }
     
     void draw()
     {
         
-        
-        float scale = ofMap(mouseX, 0, ofGetWidth(), 0.05, .2, true);
-        
-        
         ofPushMatrix();
         ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
         ofPushMatrix();
-        ofScale(scale, scale);
+        ofScale(zoom, zoom);
         urg.draw(10, 5600);
         tracker.draw();
         ofPopMatrix();

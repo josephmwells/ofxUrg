@@ -198,6 +198,12 @@
 		C826BC711BA32C76005C4A1B /* ofxSliderGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxSliderGroup.h; sourceTree = "<group>"; };
 		C826BC721BA32C76005C4A1B /* ofxToggle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxToggle.cpp; sourceTree = "<group>"; };
 		C826BC731BA32C76005C4A1B /* ofxToggle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxToggle.h; sourceTree = "<group>"; };
+		C83BD02E1BCC0D9600FCF5EA /* DelayTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DelayTimer.h; sourceTree = "<group>"; };
+		C83BD02F1BCC0D9600FCF5EA /* FadeTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FadeTimer.h; sourceTree = "<group>"; };
+		C83BD0301BCC0D9600FCF5EA /* Hysteresis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Hysteresis.h; sourceTree = "<group>"; };
+		C83BD0311BCC0D9600FCF5EA /* LerpTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LerpTimer.h; sourceTree = "<group>"; };
+		C83BD0321BCC0D9600FCF5EA /* ofxTiming.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxTiming.h; sourceTree = "<group>"; };
+		C83BD0331BCC0D9600FCF5EA /* RateTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RateTimer.h; sourceTree = "<group>"; };
 		C84C944B1BA6063600FE9677 /* ofxUrgTracker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxUrgTracker.cpp; path = ../src/ofxUrgTracker.cpp; sourceTree = "<group>"; };
 		C84C944C1BA6063600FE9677 /* ofxUrgTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxUrgTracker.h; path = ../src/ofxUrgTracker.h; sourceTree = "<group>"; };
 		C84C94501BA6068300FE9677 /* ofxCv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxCv.h; sourceTree = "<group>"; };
@@ -446,6 +452,7 @@
 				C826BC611BA32C76005C4A1B /* ofxGui */,
 				C84C944E1BA6068300FE9677 /* ofxCv */,
 				C84C94861BA6068900FE9677 /* ofxOpenCv */,
+				C83BD02C1BCC0D9600FCF5EA /* ofxTiming */,
 			);
 			name = addons;
 			sourceTree = "<group>";
@@ -705,6 +712,28 @@
 			);
 			name = src;
 			path = ../../ofxGui/src;
+			sourceTree = "<group>";
+		};
+		C83BD02C1BCC0D9600FCF5EA /* ofxTiming */ = {
+			isa = PBXGroup;
+			children = (
+				C83BD02D1BCC0D9600FCF5EA /* src */,
+			);
+			name = ofxTiming;
+			sourceTree = "<group>";
+		};
+		C83BD02D1BCC0D9600FCF5EA /* src */ = {
+			isa = PBXGroup;
+			children = (
+				C83BD02E1BCC0D9600FCF5EA /* DelayTimer.h */,
+				C83BD02F1BCC0D9600FCF5EA /* FadeTimer.h */,
+				C83BD0301BCC0D9600FCF5EA /* Hysteresis.h */,
+				C83BD0311BCC0D9600FCF5EA /* LerpTimer.h */,
+				C83BD0321BCC0D9600FCF5EA /* ofxTiming.h */,
+				C83BD0331BCC0D9600FCF5EA /* RateTimer.h */,
+			);
+			name = src;
+			path = ../../ofxTiming/src;
 			sourceTree = "<group>";
 		};
 		C84C944E1BA6068300FE9677 /* ofxCv */ = {

@@ -15,6 +15,9 @@ void ofxUrgFollower::setup(const cv::Point2f& track) {
     position = track;
     recent = track;
 }
+cv::Point2f ofxUrgFollower::getPosition(){
+    return position;
+}
 
 void ofxUrgFollower::update(const cv::Point2f& track) {
     position = toCv(toOf(position).interpolate(toOf(track), .1));

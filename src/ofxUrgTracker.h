@@ -25,6 +25,7 @@ public:
     virtual void kill();
     virtual float getLiving() const;
     virtual void draw(float clusterSize = 60);
+    virtual cv::Point2f getPosition();
 };
 
 template <class F>
@@ -37,7 +38,7 @@ public:
     ,maxPointDistance(50)
     ,useKmeans(true)
     ,maxStddev(60)
-    ,captureOutline(true){ // 60 is good for hand/arm tracking
+    ,captureOutline(false){ // 60 is good for hand/arm tracking
     }
     void setupKmeans(float maxStddev, unsigned int maxClusterCount) {
         this->maxClusterCount = maxClusterCount;
@@ -48,6 +49,10 @@ public:
         this->maxPointDistance = maxPointDistance;
         this->minClusterSize = minClusterSize;
         useKmeans = false;
+    }
+    void setUseAutoRegion(bool use){
+        captureOutline = true;
+        useOutline = use;
     }
     void setRegion(const ofRectangle& region) {
         this->region = region;
@@ -60,16 +65,16 @@ public:
             ((ofxUrgFollower) followers[i]).draw();
         }
         ofSetColor(255);
-        ofRect(region);
-        outline.draw();
-        ofSetColor(255, 0, 255);
-        left.draw();
-        ofSetColor(255, 255, 0);
-        right.draw();
+        if(useOutline){
+            outline.draw();
+        }else{
+            ofRect(region);
+        }
+
         ofPopStyle();
     }
     void update(const vector<ofPoint>& points) {
-        if(captureOutline){
+        if(captureOutline && useOutline){
             outline.clear();
             left.clear();
             right.clear();
@@ -98,11 +103,11 @@ public:
                 right.addVertex(R);
             }
             
-
+            
             right.close();
             left.close();
-      
-
+            
+            
             
             //            ofPoint center = outline.getCentroid2D();
             //            for(int i = 0; i < outline.getVertices().size(); i++){
@@ -138,6 +143,7 @@ public:
         captureOutline = true;
     }
 protected:
+    bool useOutline;
     bool captureOutline;
     ofPolyline outline;
     ofPolyline left;
@@ -191,10 +197,19 @@ protected:
     void updateKmeans(const vector<ofPoint>& points) {
         // build samples vector for all points within the bounds
         vector<cv::Point2f> samples;
-        ofPoint center = outline.getCentroid2D();
-        for(int i = 0; i < points.size(); i++) {
-            if(right.inside(ofVec2f(points[i].x, points[i].y))) {
-                samples.push_back(ofxCv::toCv(ofVec2f(points[i].x, points[i].y)));
+        if(useOutline){
+            ofPoint center = outline.getCentroid2D();
+            for(int i = 0; i < points.size(); i++) {
+                if(right.inside(ofVec2f(points[i].x, points[i].y))) {
+                    samples.push_back(ofxCv::toCv(ofVec2f(points[i].x, points[i].y)));
+                }
+            }
+        }else{
+            ofPoint center = region.getCenter();
+            for(int i = 0; i < points.size(); i++) {
+                if(region.inside(ofVec2f(points[i].x, points[i].y))) {
+                    samples.push_back(ofxCv::toCv(ofVec2f(points[i].x, points[i].y)));
+                }
             }
         }
         
