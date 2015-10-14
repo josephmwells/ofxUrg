@@ -61,9 +61,9 @@ public:
         oscParameters.add(oscHost.set("OSC HOST", "127.0.0.1"));
         oscParameters.add(oscPort.set("OSC PORT", "7777"));
         
-        viewParameters.add(searchRegionCenterPt.set("Search Region Center", ofVec2f(-ofToInt(maxRange)/2, -ofToInt(maxRange)/2), ofVec2f(-ofToInt(maxRange), -ofToInt(maxRange)), ofVec2f(ofToInt(maxRange), ofToInt(maxRange))));
+        viewParameters.add(searchRegionCenterPt.set("Search Region Center", ofVec2f(-1500, -1500), ofVec2f(-ofToInt(maxRange), -ofToInt(maxRange)), ofVec2f(ofToInt(maxRange), ofToInt(maxRange))));
         viewParameters.add(useAutoRegion.set("Use Auto Region", false));
-        viewParameters.add(searchRegionSize.set("Search Region Size", 500, 0, ofToInt(maxRange)*2));
+        viewParameters.add(searchRegionSize.set("Search Region Size", 1500, 0, ofToInt(maxRange)*2));
         viewParameters.add(zoom.set("Zoom", 0.05, 0.05, .2));
         
         searchRegionCenterPt.addListener(this, &ofApp::updatedSearchCenterPoint);
@@ -146,15 +146,16 @@ public:
                 sender.sendMessage(m);
             }
             
-            vector<ofxUrgFollower> folowers = tracker.getFollowers();
-            if(folowers.size() > 0){
+            vector<ofxUrgFollower> followers = tracker.getFollowers();
+            if(followers.size() > 0){
                 ofxOscMessage m;
                 m.setAddress("/urg/tracker/data");
-                for(int i = 0; i < folowers.size(); i++){
-                    ofVec2f pt = ofxCv::toOf(folowers[i].getPosition());
+                for(int i = 0; i < followers.size(); i++){
+                    ofVec2f pt = ofxCv::toOf(followers[i].getPosition());
                     m.addIntArg(i);
                     m.addFloatArg(pt.x);
                     m.addFloatArg(pt.y);
+                    m.addFloatArg(followers[i].getLiving());
                 }
                 sender.sendMessage(m);
             }

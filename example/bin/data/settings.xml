@@ -2,7 +2,7 @@
 	<LiDAR_Parameter>
 		<Serial_Port>/dev/tty.usbmodem14121</Serial_Port>
 	<Max_Range>5600</Max_Range>
-	<maxClusterCount>17</maxClusterCount>
+	<maxClusterCount>12</maxClusterCount>
 		<maxStddev>60</maxStddev>
 	</LiDAR_Parameter>
 	<OSC_Paremeters>
@@ -13,7 +13,7 @@
 <ZOOM>1</ZOOM>
 <Zoom>0.05</Zoom>
 <Search_Region>0, 0, 0, 500, 500</Search_Region>
-<Search_Region_Center>-2663.22, -2800</Search_Region_Center>
+<Search_Region_Center>-1500, -1500</Search_Region_Center>
 	<Use_Auto_Region>0</Use_Auto_Region>
-	<Search_Region_Size>5779.59</Search_Region_Size>
+	<Search_Region_Size>2710.2</Search_Region_Size>
 </group>
