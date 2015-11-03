@@ -80,7 +80,7 @@ public:
         panel.setWidthElements(350);
         //
         //        panel.saveToFile("settings.xml");
-        //panel.loadFromFile("settings.xml");
+        panel.loadFromFile("settings.xml");
         
         
         int _max = ofToInt(maxRange);
