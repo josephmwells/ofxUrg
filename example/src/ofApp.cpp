@@ -1,6 +1,5 @@
 #include "ofMain.h"
 #include "ofxUrg.h"
-#include "ofxSyphon.h"
 #include "ofxOsc.h"
 #include "ofxXmlSettings.h"
 #include "ofxGui.h"
@@ -14,7 +13,6 @@ class ofApp : public ofBaseApp {
     ofxUrgTracker<ofxUrgFollower> tracker;
     ofRectangle trackingRegion;
     ofEasyCam cam;
-    ofxSyphonServer server;
     ofxOscSender sender;
     ofxXmlSettings settings;
     ofParameter<string> oscPort;
