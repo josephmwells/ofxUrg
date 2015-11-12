@@ -10,13 +10,14 @@ This includes a tracker from [Kyle McDonald's](https://github.com/kylemcdonald) 
 ###OSC Receiver
 ![Image of Receiver](https://raw.githubusercontent.com/danthemellowman/ofxUrg/master/images/receiver.png)
 
-!(/images/device.JPG)
+![Image of device](https://raw.githubusercontent.com/danthemellowman/ofxUrg/master/images/device.JPG)
 ### Setup
 1. Add the contents of this repo to the "addons" folder of Open Frameworks.
 2. Unzip ofxUrg>releases>"Sender.zip"
 3. Plug the Urg scanner into a powered USB hub. Plug the powered USB hub into the computer. NOTE: The Urg scanner can draw .8 amps on start-up. This is more than most computer USB ports can supply. The use of a powered USB hub is highly recommended.
 
-!(/images/physical_setup.JPG)
+![Image of device](https://raw.githubusercontent.com/danthemellowman/ofxUrg/master/images/physical_setup.JPG)
+
 4. Open Terminal and type in "ls / dev/tty.*"
 5. Copy the like that is returned. it will look something like "/dev/tty.usbmodem14521".
 6. Open the ofxUrg>releases>Sender>data>"settings.xml".
