@@ -1,10 +1,9 @@
 /*!
   \file
-  \brief URG ドライバ
-
+  \brief URG driver
   \author Satofumi KAMIMURA
 
-  $Id: Urg_driver.cpp 1937 2010-10-25 01:12:49Z satofumi $
+  $Id$
 */
 
 #include "Urg_driver.h"
@@ -24,7 +23,6 @@ using namespace std;
 struct Urg_driver::pImpl
 {
     urg_t urg_;
-    bool is_opened_;
     measurement_type_t last_measure_type_;
     long time_stamp_offset_;
 
@@ -36,7 +34,7 @@ struct Urg_driver::pImpl
 
 
     pImpl(void)
-        : is_opened_(false), last_measure_type_(Distance), time_stamp_offset_(0)
+        :last_measure_type_(Distance), time_stamp_offset_(0)
     {
     }
 
@@ -92,7 +90,6 @@ bool Urg_driver::open(const char* device_name, long baudrate,
                       connection_type_t type)
 {
     close();
-    pimpl->is_opened_ = false;
     pimpl->product_type_.clear();
     pimpl->firmware_version_.clear();
     pimpl->serial_id_.clear();
@@ -104,23 +101,21 @@ bool Urg_driver::open(const char* device_name, long baudrate,
         return false;
     }
 
-    pimpl->is_opened_ = true;
     return true;
 }
 
 
 void Urg_driver::close(void)
 {
-    if (pimpl->is_opened_) {
+    if (is_open()) {
         urg_close(&pimpl->urg_);
-        pimpl->is_opened_ = false;
     }
 }
 
 
 bool Urg_driver::is_open(void) const
 {
-    return pimpl->is_opened_;
+    return pimpl->urg_.is_active;
 }
 
 
@@ -144,9 +139,9 @@ bool Urg_driver::laser_off(void)
 }
 
 
-void Urg_driver::reboot(void)
+bool Urg_driver::reboot(void)
 {
-    urg_reboot(&pimpl->urg_);
+    return urg_reboot(&pimpl->urg_) == URG_NO_ERROR;
 }
 
 
@@ -207,7 +202,7 @@ bool Urg_driver::get_distance(std::vector<long>& data, long* time_stamp)
         return false;
     }
 
-    // 最大サイズを確保し、そこにデータを格納する
+    // Allocates memory for the maximum size and stores data there
     data.resize(max_data_size());
     int ret = urg_get_distance(&pimpl->urg_, &data[0], time_stamp);
     if (ret > 0) {
@@ -227,7 +222,7 @@ bool Urg_driver::get_distance_intensity(std::vector<long>& data,
         return false;
     }
 
-    // 最大サイズを確保し、そこにデータを格納する
+    // Allocates memory for the maximum size and stores data there
     size_t data_size = max_data_size();
     data.resize(data_size);
     intensity.resize(data_size);
@@ -250,7 +245,7 @@ bool Urg_driver::get_multiecho(std::vector<long>& data_multiecho,
         return false;
     }
 
-    // 最大サイズを確保し、そこにデータを格納する
+    // Allocates memory for the maximum size and stores data there
     size_t echo_size = max_echo_size();
     size_t data_size = max_data_size() * echo_size;
     data_multiecho.resize(data_size);
@@ -273,7 +268,7 @@ bool Urg_driver::get_multiecho_intensity(std::vector<long>& data_multiecho,
         return false;
     }
 
-    // 最大サイズを確保し、そこにデータを格納する
+    // Allocates memory for the maximum size and stores data there
     size_t echo_size = max_echo_size();
     size_t data_size = max_data_size() * echo_size;
     data_multiecho.resize(data_size);
@@ -305,14 +300,22 @@ void Urg_driver::stop_measurement(void)
     urg_stop_measurement(&pimpl->urg_);
 }
 
+long Urg_driver::get_sensor_time_stamp(void)
+{
+    long time_stamp = urg_time_stamp(&pimpl->urg_);
+    if (time_stamp < 0)
+        return time_stamp; // error code
+    pimpl->adjust_time_stamp(&time_stamp);
+    return time_stamp;
+}
 
 bool Urg_driver::set_sensor_time_stamp(long time_stamp)
 {
-    // この時点での PC のタイムスタンプを取得
+    // Gets the PC's current timestamp
     long function_first_ticks = ticks();
 
-    // PC とセンサのタイムスタンプの差を計算から推定し、
-    // 最後に指定された time_stamp になるような補正値を足し込む
+    // Estimates the difference between the PC's and the sensor timestamps
+    // and then adds the correction offset indicated by the time_stamp argument
     enum {
         Average_times = 10,
     };

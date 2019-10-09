@@ -1,10 +1,9 @@
 /*!
   \file
-  \brief タイムスタンプの取得
-
+  \brief Gets computer timestamp
   \author Satofumi KAMIMURA
 
-  $Id: ticks.cpp,v 67b996051e49 2014/07/17 01:07:06 jun $
+  $Id$
 */
 
 #include "ticks.h"

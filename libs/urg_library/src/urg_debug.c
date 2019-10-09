@@ -1,4 +1,9 @@
 /*!
+   Auxiliary functions (read and write raw data)
+  \brief 
+  \author Satofumi KAMIMURA
+
+  $Id$
 */
 
 #include "urg_debug.h"

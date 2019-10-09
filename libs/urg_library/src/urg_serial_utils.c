@@ -1,7 +1,6 @@
 /*!
   \file
-  \brief ƒVƒŠƒAƒ‹—p‚Ì•â•ŠÖ”
-
+  \brief Serial communications auxiliary functions
   \author Satofumi KAMIMURA
 
   $Id$
