@@ -68,7 +68,7 @@ public:
         if(useOutline){
             outline.draw();
         }else{
-            ofRect(region);
+            ofDrawRectangle(region);
         }
 
         ofPopStyle();
@@ -93,7 +93,7 @@ public:
                 const ofPoint & thisPoint = outline.getVertices()[i - 1];
                 const ofPoint & nextPoint = outline.getVertices()[i];
                 ofPoint delta		= nextPoint - thisPoint;
-                ofPoint deltaNorm	= delta.normalized();
+                ofPoint deltaNorm	= delta.getNormalized();
                 
                 ofVec3f toTheLeft	= deltaNorm.getPerpendicular(ofVec3f(0, 0, 1));
                 

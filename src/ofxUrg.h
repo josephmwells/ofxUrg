@@ -82,7 +82,7 @@ public:
         if (!urg.open(device_or_ip_name.c_str(), baudrate_or_port_number,
                       (connect_type==SERIAL) ? qrk::Urg_driver::Serial : qrk::Urg_driver::Ethernet))
         {
-            ofLogError("Urg connection failed", urg.what());
+            ofLogError("Urg connection failed", "%s", urg.what());
             return false;
         }
         
@@ -214,7 +214,7 @@ public:
         {
             float x = ofMap(i, 0, data.size(), 0, width, true);
             float y = ofMap(data[i], 0, 1500, 0, height, true);
-            ofLine(x, 0, x, y);
+            ofDrawLine(x, 0, x, y);
         }
         mutex.unlock();
     }
@@ -318,7 +318,7 @@ public:
     int lower;
     ofFbo mTexture;
     ofTexture & getTexture(){
-        return mTexture.getTextureReference();
+        return mTexture.getTexture();
     }
     
 protected:
@@ -334,12 +334,12 @@ protected:
                     if (mode == DISTANCE)
                     {
                         if (!urg.get_distance(data_buffer, &timestamp))
-                            ofLogError("urg get distance", urg.what());
+                        ofLogError("urg get distance", "%s", urg.what());
                     }
                     if (mode == DISTANCE_INTENSITY)
                     {
                         if (!urg.get_distance_intensity(data_buffer, intensity_buffer, &timestamp))
-                            ofLogError("urg get distance intensity", urg.what());
+                            ofLogError("urg get distance intensity", "%s", urg.what());
                     }
                 }
             }
