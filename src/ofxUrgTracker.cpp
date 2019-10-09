@@ -20,9 +20,9 @@ cv::Point2f ofxUrgFollower::getPosition(){
 }
 
 void ofxUrgFollower::update(const cv::Point2f& track) {
-    position = toCv(toOf(position).interpolate(toOf(track), .1));
+    position = toCv(ofVec2f(toOf(position)).interpolate(ofVec2f(toOf(track)), .1));
     recent = track;
-    all.addVertex(toOf(position));
+    all.addVertex(toOf(position).x, toOf(position).y, 0.0);
 }
 
 void ofxUrgFollower::kill() {
@@ -50,8 +50,8 @@ void ofxUrgFollower::draw(float clusterSize) {
     } else {
         ofSetColor(ofColor::green);
     }
-    ofCircle(toOf(position), clusterSize);
-    ofLine(toOf(recent), toOf(position));
+    ofDrawCircle(toOf(position), clusterSize);
+    ofDrawLine(toOf(recent), toOf(position));
     ofSetColor(255);
     ofDrawBitmapString(ofToString(label), toOf(recent));
     all.draw();

@@ -157,17 +157,17 @@ protected:
     
     void updateNaive(const vector<ofPoint>& points) {
         if(points.size() > 0) {
-            vector< vector<ofVec2f> > all;
+            vector< vector<glm::vec2> > all;
             for(int i = 0; i < points.size(); i++) {
-                const ofVec2f& cur = points[i];
+                const glm::vec2& cur = glm::vec2(points[i].x, points[i].y);
                 if(region.inside(cur)) {
                     if(all.empty()) {
-                        all.push_back(vector<ofVec2f>());
+                        all.push_back(vector<glm::vec2>());
                     } else {
-                        ofVec2f& prev = all.back().back();
-                        float distance = cur.distance(prev);
+                        glm::vec2& prev = all.back().back();
+                        float distance = glm::distance(cur, prev);
                         if(distance > maxPointDistance) {
-                            all.push_back(vector<ofVec2f>());
+                            all.push_back(vector<glm::vec2>());
                         }
                     }
                     all.back().push_back(cur);
@@ -200,7 +200,7 @@ protected:
         if(useOutline){
             ofPoint center = outline.getCentroid2D();
             for(int i = 0; i < points.size(); i++) {
-                if(right.inside(ofVec2f(points[i].x, points[i].y))) {
+                if(right.inside(points[i])) {
                     samples.push_back(ofxCv::toCv(ofVec2f(points[i].x, points[i].y)));
                 }
             }

@@ -192,7 +192,7 @@ public:
         for(int i = 0; i < gridDivisions; i++) {
             float radius = ofMap(i, -1, gridDivisions - 1, 0, gridSize);
             ofSetColor(64);
-            ofCircle(0, 0, radius);
+            ofDrawCircle(0, 0, radius);
             ofVec2f textPosition = ofVec2f(radius, 0).rotate(45);
             ofSetColor(255);
             ofDrawBitmapString(ofToString(radius, 2) + "mm", textPosition);
