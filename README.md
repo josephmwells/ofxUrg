@@ -1,4 +1,4 @@
-## Forward
+## About
 This is a fork of [danzeeeman's](https://github.com/danzeeeman) wonderfully built [ofxUrg](https://github.com/danzeeeman/ofxUrg) addon for openframeworks. This version is updated to work with OF10.0+ as well as [Kyle Mcdonald's](https://github.com/kylemcdonald) [ofxCv](https://github.com/kylemcdonald/ofxCv) addon in its current form. In addition, I have updated [Yusuke Tomoto's](https://github.com/yusuketomoto) original [ofxURG](https://github.com/yusuketomoto/ofxUrg) addon to the the [URG library](https://sourceforge.net/p/urgnetwork/wiki/top_en/) current version of 1.2.4, and have also included serial support for Windows platforms.
 
 Besides fixing deprecations, I am also adding support for the rest of the [Hokuyo Scanning Rangefinders](https://www.hokuyo-aut.jp/) that use the [URG library](https://sourceforge.net/p/urgnetwork/wiki/top_en/).
@@ -7,6 +7,26 @@ Besides fixing deprecations, I am also adding support for the rest of the [Hokuy
 A Fork with updates from [Yusuke Tomoto's](https://github.com/yusuketomoto) [ofxURG](https://github.com/yusuketomoto/ofxUrg)
 
 This includes a tracker from [Kyle McDonald's](https://github.com/kylemcdonald) [ofxSick](https://github.com/ZigelbaumCoelho/ofxSick)
+
+## Project Setup
+Using ofxUrg requires:
+- ofxUrg/libs/urg_library/include/ Which contains all the ofxUrg headers.
+- ofxUrg/libs/urg_library/src/ Which contains all the ofxUrg source.
+- ofxUrg/src/ Which ties together all of ofxCv into a single include.
+
+If you are building on Windows:
+- ofxUrg/libs/urg_library/lib/vs/ contains both the .lib files for Win32 and x64 builds. Include this path in your linker settings.
+- you must include both urg.lib and urc_cpp.lib in your linker settings.
+
+When building on any platform, make sure your IDE//Compiler ignores the following files:
+- urg_serial_linux.c
+- urg_serial_windows.c
+- urg_serial_utils_linux.c
+- urg_serial_utils_windows.c
+
+These will be included by pre-processor conditions in the files urg_serial.c and urg_serial_utils.c . Failure to do so will result in Linking Errors; duplicate symbols, etc.
+
+## Example Setup
 
 ### OSC Sender
 ![Image of Sender](https://raw.githubusercontent.com/danthemellowman/ofxUrg/master/images/sender.png)
