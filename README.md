@@ -12,7 +12,7 @@ This includes a tracker from [Kyle McDonald's](https://github.com/kylemcdonald) 
 Using ofxUrg requires:
 - ofxUrg/libs/urg_library/include/ Which contains all the ofxUrg headers.
 - ofxUrg/libs/urg_library/src/ Which contains all the ofxUrg source.
-- ofxUrg/src/ Which ties together all of ofxCv into a single include.
+- ofxUrg/src/ Which ties together all of ofxUrg into a single include.
 
 If you are building on Windows:
 - ofxUrg/libs/urg_library/lib/vs/ contains both the .lib files for Win32 and x64 builds. Include this path in your linker settings.
