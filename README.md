@@ -1,7 +1,7 @@
 ## Forward
-This is a fork of [danzeeeman's](https://github.com/danzeeeman) wonderfully built [ofxUrg](https://github.com/danzeeeman/ofxUrg) addon for openframeworks. This version is updated to work with OF10.0+ as well as the [Kyle Mcdonald's](https://github.com/kylemcdonald) [ofxCv](https://github.com/kylemcdonald/ofxCv) addon in its current form. In addition, I have updated Yusuke Tomoto's original ofxUrg addon to the the [URG library] current version of 1.2.4, and have also included serial support for Windows platforms.
+This is a fork of [danzeeeman's](https://github.com/danzeeeman) wonderfully built [ofxUrg](https://github.com/danzeeeman/ofxUrg) addon for openframeworks. This version is updated to work with OF10.0+ as well as [Kyle Mcdonald's](https://github.com/kylemcdonald) [ofxCv](https://github.com/kylemcdonald/ofxCv) addon in its current form. In addition, I have updated [Yusuke Tomoto's](https://github.com/yusuketomoto) original [ofxURG](https://github.com/yusuketomoto/ofxUrg) addon to the the [URG library](https://sourceforge.net/p/urgnetwork/wiki/top_en/) current version of 1.2.4, and have also included serial support for Windows platforms.
 
-Besides fixing deprecations, I am also adding support for the rest of the [Hokuyo Scanning Rangefinders](https://www.hokuyo-aut.jp/) that use the [URG library](https://sourceforge.net/p/urgnetwork/wiki/top_en/)
+Besides fixing deprecations, I am also adding support for the rest of the [Hokuyo Scanning Rangefinders](https://www.hokuyo-aut.jp/) that use the [URG library](https://sourceforge.net/p/urgnetwork/wiki/top_en/).
 
 ## ofxURG
 A Fork with updates from [Yusuke Tomoto's](https://github.com/yusuketomoto) [ofxURG](https://github.com/yusuketomoto/ofxUrg)
