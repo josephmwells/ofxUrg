@@ -1158,7 +1158,7 @@ static char *copy_token(char *dest, char *receive_buffer,
         for (i = 0; i < lines; ++i) {
             if (!strncmp(p, start_str, start_str_len)) {
 
-                char *last_p = strchr(p + start_str_len, end_ch[j]);
+                char *last_p = (char*)strchr(p + start_str_len, end_ch[j]);
                 if (last_p) {
                     *last_p = '\0';
                     memcpy(dest, p + start_str_len,
