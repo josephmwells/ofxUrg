@@ -19,12 +19,12 @@ If you are building on Windows:
 - you must include both urg.lib and urc_cpp.lib in your linker settings.
 
 When building on any platform, make sure your IDE//Compiler ignores the following files:
-- urg_serial_linux.c
-- urg_serial_windows.c
-- urg_serial_utils_linux.c
-- urg_serial_utils_windows.c
+- `urg_serial_linux.c`
+- `urg_serial_windows.c`
+- `urg_serial_utils_linux.c`
+- `urg_serial_utils_windows.c`
 
-These will be included by pre-processor conditions in the files urg_serial.c and urg_serial_utils.c . Failure to do so will result in Linking Errors; duplicate symbols, etc.
+These will be included by pre-processor conditions in the files `urg_serial.c` and `urg_serial_utils.c` . Failure to do so will result in Linking Errors; duplicate symbols, etc.
 
 ## Example Setup
 
