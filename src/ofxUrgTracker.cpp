@@ -53,7 +53,8 @@ void ofxUrgFollower::draw(float clusterSize) {
     ofDrawCircle(toOf(position), clusterSize);
     ofDrawLine(toOf(recent), toOf(position));
     ofSetColor(255);
-    ofDrawBitmapString(ofToString(label), toOf(recent));
+    ofDrawBitmapString(ofToString(label) + "[" + ofToString(position.x, 0) + "," + ofToString(position.y, 0) + "]", toOf(recent));
+    ofSetColor(255);
     all.draw();
     ofPopStyle();
 }

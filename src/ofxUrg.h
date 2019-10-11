@@ -36,6 +36,7 @@ public:
     ,mode(DISTANCE)
     ,active(false)
     ,is_frame_new(false)
+    ,orientation_y(false)
     {}
     
     virtual ~Device()
@@ -157,7 +158,9 @@ public:
             float theta = urg.index2rad(i);
             float x = ofMap(r * cos(theta), lower, upper, 0, 1000, true);
             float y = ofMap(r * sin(theta), lower, upper, 0, 1000, true);
-            points[i] = ofVec2f(x,y);
+            ofVec2f point = ofVec2f(x,y);
+            if(orientation_y) point.rotate(90);
+            points[i] = point;
         }
         mutex.unlock();
         return points;
@@ -177,7 +180,9 @@ public:
             float theta = urg.index2rad(i);
             float x = r * cos(theta);
             float y = r * sin(theta);
-            points[i] = ofPoint(x,y);
+            ofVec2f point = ofVec2f(x, y);
+            if(orientation_y) point.rotate(90);
+            points[i] = ofPoint(point);
         }
         mutex.unlock();
         return points;
@@ -231,6 +236,7 @@ public:
     ofMesh getPointCloud() const{
         ofMesh m;
         m.setMode(OF_PRIMITIVE_POINTS);
+        m.addVertex(ofVec3f::zero());
         ofMutex mutex;
         mutex.lock();
         for (int i=0; i<data.size(); i++)
@@ -240,7 +246,9 @@ public:
             float theta = urg.index2rad(i);
             float x = r * cos(theta);
             float y = r * sin(theta);
-            m.addVertex(ofVec3f(x,y));
+            ofVec2f point = ofVec2f(x, y);
+            if(orientation_y) point.rotate(90);
+            m.addVertex(ofVec3f(point));
         }
         mutex.unlock();
         return m;
@@ -258,7 +266,9 @@ public:
             float theta = urg.index2rad(i);
             float x = r * cos(theta);
             float y = r * sin(theta);
-            m.addVertex(ofVec3f(x,y));
+            ofVec2f point = ofVec2f(x, y);
+            if(orientation_y) point.rotate(90);
+            m.addVertex(ofVec3f(point));
             if(i %2 == 0){
                 m.addColor(ofColor(255, 0, 255));
             }else{
@@ -282,6 +292,7 @@ public:
         ofPopMatrix();
     }
     bool isFrameNew() const { return is_frame_new; }
+    void setOrientationY(bool orientation) { orientation_y = orientation; return;}
     
     string  productType(void)           const { return urg.product_type(); }
     string  firmwareVersion(void)       const { return urg.firmware_version(); }
@@ -352,6 +363,7 @@ protected:
     Mode mode;
     qrk::Urg_driver urg;
     
+    bool orientation_y;
     bool active;
     bool is_frame_new;
     vector<long> data, data_buffer;
