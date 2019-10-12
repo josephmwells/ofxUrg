@@ -16,7 +16,7 @@ Using ofxUrg requires:
 
 If you are building on Windows:
 - ofxUrg/libs/urg_library/lib/vs/ contains both the .lib files for Win32 and x64 builds. Include this path in your linker settings.
-- you must include both urg.lib and urc_cpp.lib in your linker settings.
+- you must include both `urg.lib` and `urc_cpp.lib` in your linker settings.
 
 When building on any platform, make sure your IDE//Compiler ignores the following files:
 - `urg_serial_linux.c`
